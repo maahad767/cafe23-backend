@@ -4,13 +4,14 @@ import {
   IsNotEmpty,
   IsString,
   Matches,
+  IsEnum,
 } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
   @IsString()
   @Matches(/^(?:B|b)(?:S|s)\d{4,}$/, { message: 'Invalid BSID' })
-  bsid: string;
+  bsId: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -29,4 +30,10 @@ export class RegisterDto {
     message: 'Invalid phone(BD) number',
   })
   phone: string;
+
+  @IsEnum(['EMPLOYEE', 'SUPPORT'], {
+    message: "Invalid role, must be one of ['EMPLOYEE', 'SUPPORT']",
+  })
+  @IsString()
+  role: string;
 }

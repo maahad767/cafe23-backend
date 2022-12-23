@@ -4,7 +4,7 @@ export class LoginDto {
   @IsNotEmpty()
   @IsString()
   @Matches(/^(?:B|b)(?:S|s)\d{4,}$/, { message: 'Invalid BSID' })
-  bsid: string;
+  bsId: string;
 
   @IsNotEmpty()
   @IsString()

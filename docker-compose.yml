@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  mongodb-dev:
+    ports:
+      - 27017:27017
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=bs23
+      - MONGO_INITDB_ROOT_PASSWORD=bs23cafe23
+
+
+  mongodb-test:
+    ports:
+      - 27018:27017
+    image: mongo:latest
+
+      
+    

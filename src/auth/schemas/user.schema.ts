@@ -21,10 +21,14 @@ export class User {
   @Prop()
   name: string;
 
-  @Prop({ enum: ['EMPLOYEE', 'SUPPORT'] })
+  @Prop({ enum: ['EMPLOYEE', 'SUPPORT', 'ADMIN'] })
   role: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Owner', required: false })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Office',
+    required: false,
+  })
   office: Office;
 }
 

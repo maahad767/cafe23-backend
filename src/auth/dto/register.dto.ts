@@ -15,6 +15,9 @@ export class RegisterDto {
 
   @IsNotEmpty()
   @IsEmail()
+  @Matches(/^(?:\w|\w\.\w)+@brainstation-23.com$/, {
+    message: 'Email must be brainstation-23 official email.',
+  })
   email: string;
 
   @IsNotEmpty()
@@ -31,8 +34,8 @@ export class RegisterDto {
   })
   phone: string;
 
-  @IsEnum(['EMPLOYEE', 'SUPPORT'], {
-    message: "Invalid role, must be one of ['EMPLOYEE', 'SUPPORT']",
+  @IsEnum(['EMPLOYEE', 'SUPPORT', 'ADMIN'], {
+    message: "Invalid role, must be one of ['EMPLOYEE', 'SUPPORT', 'ADMIN']",
   })
   @IsString()
   role: string;

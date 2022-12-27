@@ -9,10 +9,10 @@ export class Office {
   branch: string;
 
   @Prop()
-  floor: string;
+  floor: number;
 
   @Prop()
-  room: string;
+  room: number;
 }
 
 export const OfficeSchema = SchemaFactory.createForClass(Office);

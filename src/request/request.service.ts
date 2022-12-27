@@ -24,7 +24,7 @@ export class RequestService {
     try {
       let newReq = {
         ...requestDto,
-        bsId: user?.bsId,
+        bsId: user?.bsid,
         requestedUserId: user?._id,
       };
       const newItem = new this.requestModel(newReq);
@@ -39,19 +39,12 @@ export class RequestService {
   }
 
   async findAllRequests(query: RequestQueryDto, user) {
-    console.log(user?.office);
     try {
-      const address = {
-        branch: 'Mohakhali',
-        floor: '8th',
-        room: '405A',
-      };
-
       if (user?.role === 'EMPLOYEE') {
         const findQuery =
           query.status === 'All'
-            ? { bsId: user?.bsId, isActive: true }
-            : { status: query?.status, bsId: user?.bsId, isActive: true };
+            ? { bsId: user?.bsid, isActive: true }
+            : { status: query?.status, bsId: user?.bsid, isActive: true };
         return await this.requestModel
           .find(findQuery)
           .populate('requestedUserId', '-hash')
@@ -60,8 +53,8 @@ export class RequestService {
           .limit(+query?.limit);
       } else {
         let queries = {
-          'address.branch': address?.branch,
-          'address.floor': address?.floor,
+          'address.branch': user?.office?.branch,
+          'address.floor': user?.office?.floor,
           isActive: true,
         };
         const findQuery =

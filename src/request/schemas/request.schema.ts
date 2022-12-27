@@ -1,20 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from '../../auth/schemas/index';
+import { Office, User } from '../../auth/schemas/index';
 
 export type RequestDocument = HydratedDocument<Request>;
-
-@Schema()
-export class Address {
-  @Prop({ required: true })
-  branch: string;
-
-  @Prop({ required: true })
-  floor: string;
-
-  @Prop({ required: true })
-  room: string;
-}
 
 @Schema()
 export class Request {
@@ -33,8 +21,8 @@ export class Request {
   @Prop({ default: Date.now() })
   createdAt: Date;
 
-  @Prop({ type: Address, required: true })
-  address: Address;
+  @Prop({ type: Office, required: true })
+  address: Office;
 
   @Prop({ required: true })
   bsId: string;

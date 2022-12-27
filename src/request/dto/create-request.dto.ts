@@ -9,20 +9,7 @@ import {
   IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-
-export class Address {
-  @IsNotEmpty()
-  @IsString()
-  branch: string;
-
-  @IsNotEmpty()
-  @IsString()
-  floor: string;
-
-  @IsNotEmpty()
-  @IsString()
-  room: string;
-}
+import { UpdateLocationDto } from 'src/auth/dto';
 
 export class CreateRequestDto {
   @IsNotEmpty()
@@ -38,6 +25,6 @@ export class CreateRequestDto {
   @IsNotEmptyObject()
   @IsObject()
   @ValidateNested()
-  @Type(() => Address)
-  address: Address;
+  @Type(() => UpdateLocationDto)
+  address: UpdateLocationDto;
 }

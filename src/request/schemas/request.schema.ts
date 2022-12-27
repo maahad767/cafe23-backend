@@ -27,7 +27,7 @@ export class Request {
   @Prop({ default: 'Requested' })
   status: string;
 
-  @Prop({ default: false })
+  @Prop({ default: true })
   isActive: boolean;
 
   @Prop({ default: Date.now() })

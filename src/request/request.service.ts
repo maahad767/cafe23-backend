@@ -5,12 +5,15 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateRequestDto, RequestQueryDto, UserRequestQueryDto } from './dto';
+import {
+  CreateRequestDto,
+  RequestQueryDto,
+  UpdateDto,
+  UserRequestQueryDto,
+} from './dto';
 import { Request, RequestDocument } from './schemas';
 import { User, UserDocument } from '../auth/schemas/user.schema';
-import { Request as expressRequest } from 'express';
-import jwt_decode from 'jwt-decode';
-import { CreateResponse, Decode } from './types';
+import { CreateResponse, Decode, Status } from './types';
 
 @Injectable()
 export class RequestService {
@@ -21,14 +24,13 @@ export class RequestService {
 
   async createRequestItem(
     requestDto: CreateRequestDto,
-    req: expressRequest,
+    user: any,
   ): Promise<CreateResponse> {
     try {
-      const decode: Decode = jwt_decode(req?.headers?.authorization);
       let newReq = {
         ...requestDto,
-        bsId: decode?.bsId,
-        requestedUserId: decode?.sub,
+        bsId: user?.bsId,
+        requestedUserId: user?._id,
       };
       const newItem = new this.requestModel(newReq);
       const itemInfo = await newItem.save();
@@ -41,21 +43,19 @@ export class RequestService {
     }
   }
 
-  async findAllRequests(query: RequestQueryDto, req: expressRequest) {
+  async findAllRequests(query: RequestQueryDto, user) {
     try {
-      const decode: Decode = jwt_decode(req?.headers?.authorization);
       const address = {
         branch: 'Mohakhali',
-        floor: '5th',
+        floor: '8th',
         room: '405A',
       };
-      const userInfo = await this.userModel.findById(decode?.sub);
 
-      if (userInfo?.role === 'EMPLOYEE') {
+      if (user?.role === 'EMPLOYEE') {
         const findQuery =
           query.status === 'All'
-            ? { bsId: decode?.bsId }
-            : { status: query?.status, bsId: decode?.bsId };
+            ? { bsId: user?.bsId }
+            : { status: query?.status, bsId: user?.bsId };
         return await this.requestModel
           .find(findQuery)
           .populate('requestedUserId', '-hash')
@@ -66,7 +66,6 @@ export class RequestService {
         let addressQuery = {
           'address.branch': address?.branch,
           'address.floor': address?.floor,
-          'address.room': address?.room,
         };
         const findQuery =
           query?.status === 'All'
@@ -77,12 +76,13 @@ export class RequestService {
             ? {
                 status: query?.status,
                 ...addressQuery,
-                servedUserId: userInfo?._id,
+                servedUserId: user?._id,
               }
             : { status: query?.status, ...addressQuery };
         return await this.requestModel
           .find(findQuery)
           .populate('requestedUserId', '-hash')
+          .populate('servedUserId', '-hash')
           .sort({ createdAt: 'descending' })
           .skip(+query?.skip)
           .limit(+query?.limit);
@@ -96,7 +96,27 @@ export class RequestService {
     try {
       return await this.requestModel
         .findById(id)
-        .populate('requestedUserId', '-hash');
+        .populate('requestedUserId', '-hash')
+        .populate('servedUserId', '-hash');
+    } catch (error) {
+      throw new BadRequestException('Something Unexpected');
+    }
+  }
+
+  async updateStatus(id: string, updateDto: UpdateDto, user): Promise<Status> {
+    try {
+      let newStatus = {
+        status: updateDto?.status,
+        servedUserId: user?._id,
+      };
+      await this.requestModel.findByIdAndUpdate(id, newStatus, {
+        new: true,
+      });
+
+      return {
+        status: 'Success',
+        message: 'Updated Status successfully',
+      };
     } catch (error) {
       throw new BadRequestException('Something Unexpected');
     }

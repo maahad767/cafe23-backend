@@ -39,6 +39,7 @@ export class RequestService {
   }
 
   async findAllRequests(query: RequestQueryDto, user) {
+    console.log(user?.office);
     try {
       const address = {
         branch: 'Mohakhali',

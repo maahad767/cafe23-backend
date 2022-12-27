@@ -23,10 +23,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       return null;
     }
 
-    const user = await this.userModel.findById(payload.sub).exec();
-    delete user.hash;
-    console.log(user);
-
+    const user = await this.userModel
+      .findById(payload.sub)
+      .select('-hash')
+      .populate('office')
+      .exec();
     return user;
   }
 }

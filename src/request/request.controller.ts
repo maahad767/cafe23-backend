@@ -31,14 +31,6 @@ export class RequestController {
     return await this.requestService.findAllRequests(query, req);
   }
 
-  @Get(':id')
-  async getUserRequests(
-    @Query() query: UserRequestQueryDto,
-    @Req() req: Request,
-  ) {
-    return await this.requestService.findAllUserRequests(query, req);
-  }
-
   @Get('info/:id')
   async getRequestDetails(@Param('id') id: string) {
     return await this.requestService.findRequestDetails(id);

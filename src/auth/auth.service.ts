@@ -6,8 +6,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as argon from 'argon2';
-import { CreateUserDto, LoginDto, RegisterDto } from './dto';
-import { User, UserDocument } from './schemas';
+import { CreateUserDto, LoginDto, RegisterDto, UpdateLocationDto } from './dto';
+import { Office, OfficeDocument, User, UserDocument } from './schemas';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Office.name) private officeModel: Model<OfficeDocument>,
     private jwt: JwtService,
     private config: ConfigService,
   ) {}
@@ -32,7 +33,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.userModel
-      .findOne({ bsId: dto.bsId.toLowerCase() })
+      .findOne({ bsid: dto.bsid.toLowerCase() })
       .exec();
 
     // if user not found
@@ -51,9 +52,41 @@ export class AuthService {
     return this.createToken(user);
   }
 
+  async getMe(user: UserDocument) {
+    const userData = {
+      id: user._id,
+      bsid: user.bsid,
+      name: user.name,
+      email: user.email,
+      office: await this.officeModel.findById(user.office),
+    };
+    return userData;
+  }
+
+  async updateLocation(user: UserDocument, dto: UpdateLocationDto) {
+    console.log(dto);
+
+    let office = await this.officeModel.findOne({
+      ...dto,
+    });
+    if (!office) {
+      office = new this.officeModel(dto);
+      await office.save();
+    }
+    user.office = office;
+    await this.userModel.updateOne({ _id: user._id }, user);
+    return {
+      office: user.office,
+      bsid: user.bsid,
+      name: user.name,
+      email: user.email,
+    };
+  }
+
   async createUser(dto: CreateUserDto) {
+    dto.bsid = dto.bsid.toLowerCase();
     const is_already_exists = await this.userModel.exists({
-      bsId: dto.bsId.toLowerCase(),
+      bsid: dto.bsid,
     });
 
     if (is_already_exists) {
@@ -61,15 +94,15 @@ export class AuthService {
     }
 
     const user = new this.userModel(dto);
-    return user.save();
+    return await user.save();
   }
 
-  async createToken(user: any): Promise<{ access_token: string }> {
-    const payload = { email: user.email, bsId: user.bsId, sub: user.id };
+  async createToken(user: UserDocument): Promise<{ access_token: string }> {
+    const payload = { email: user.email, bsid: user.bsid, sub: user.id };
     const secret = this.config.get('JWT_SECRET');
     return {
       access_token: await this.jwt.signAsync(payload, {
-        expiresIn: '15m',
+        expiresIn: '1d',
         secret,
       }),
     };

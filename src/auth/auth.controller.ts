@@ -1,20 +1,55 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Get,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto';
-import { LoginDto } from './dto';
+import { GetUser } from './decorators';
+import { LoginDto, RegisterDto, UpdateLocationDto } from './dto';
+import { JwtAuthGuard } from './guards';
+import { UserDocument } from './schemas';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
+  async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getMe(@GetUser() user: UserDocument) {
+    return this.authService.getMe(user);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @Post('update-location')
+  async updateLocation(
+    @Body() dto: UpdateLocationDto,
+    @GetUser() user: UserDocument,
+  ) {
+    return this.authService.updateLocation(user, dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('logout')
+  async logout(@Body() dto: any) {
+    // return this.authService.logout(dto);
+    // TODO: implement logout
+    throw new Error('Not implemented');
   }
 }

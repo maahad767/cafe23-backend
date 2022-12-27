@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     const user = await this.userModel.findById(payload.sub).exec();
     delete user.hash;
-    console.log('user', user);
+    console.log(user);
 
     return user;
   }

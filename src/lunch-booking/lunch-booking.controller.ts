@@ -1,5 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { Roles } from 'src/auth/decorators';
+import { GetUser, Roles } from 'src/auth/decorators';
+import { User } from 'src/auth/schemas';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
 
 import { LunchBookingService } from './lunch-booking.service';
@@ -19,7 +20,9 @@ export class LunchBookingController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('EMPLOYEE')
   @Get()
-  async getAllBookings() {
+  async getAllBookings(@GetUser() user: User) {
+    console.log(user);
+
     return { message: 'This action returns all bookings' };
   }
 

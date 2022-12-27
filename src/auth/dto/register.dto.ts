@@ -11,7 +11,7 @@ export class RegisterDto {
   @IsNotEmpty()
   @IsString()
   @Matches(/^(?:B|b)(?:S|s)\d{4,}$/, { message: 'Invalid BSID' })
-  bsId: string;
+  bsid: string;
 
   @IsNotEmpty()
   @IsEmail()

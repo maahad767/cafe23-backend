@@ -9,12 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { RequestService } from './request.service';
-import {
-  CreateRequestDto,
-  RequestQueryDto,
-  UpdateDto,
-  UserRequestQueryDto,
-} from './dto';
+import { CreateRequestDto, RequestQueryDto, UpdateDto } from './dto';
 import { CreateResponse, Status } from './types';
 import { GetUser, Roles } from 'src/auth/decorators';
 import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';

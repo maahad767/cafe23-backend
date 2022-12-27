@@ -5,15 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  CreateRequestDto,
-  RequestQueryDto,
-  UpdateDto,
-  UserRequestQueryDto,
-} from './dto';
+import { CreateRequestDto, RequestQueryDto, UpdateDto } from './dto';
 import { Request, RequestDocument } from './schemas';
 import { User, UserDocument } from '../auth/schemas/user.schema';
-import { CreateResponse, Decode, Status } from './types';
+import { CreateResponse, Status } from './types';
 
 @Injectable()
 export class RequestService {
@@ -63,22 +58,23 @@ export class RequestService {
           .skip(+query?.skip)
           .limit(+query?.limit);
       } else {
-        let addressQuery = {
+        let queries = {
           'address.branch': address?.branch,
           'address.floor': address?.floor,
+          isActive: true,
         };
         const findQuery =
           query?.status === 'All'
             ? {
-                ...addressQuery,
+                ...queries,
               }
             : query?.status === 'Served'
             ? {
                 status: query?.status,
-                ...addressQuery,
+                ...queries,
                 servedUserId: user?._id,
               }
-            : { status: query?.status, ...addressQuery };
+            : { status: query?.status, ...queries };
         return await this.requestModel
           .find(findQuery)
           .populate('requestedUserId', '-hash')

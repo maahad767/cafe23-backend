@@ -17,13 +17,3 @@ export class RequestQueryDto {
   @IsString()
   readonly skip: string;
 }
-
-export class UserRequestQueryDto {
-  @IsNotEmpty()
-  @IsString()
-  readonly limit: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly skip: string;
-}

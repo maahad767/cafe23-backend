@@ -49,8 +49,8 @@ export class RequestService {
       if (user?.role === 'EMPLOYEE') {
         const findQuery =
           query.status === 'All'
-            ? { bsId: user?.bsId }
-            : { status: query?.status, bsId: user?.bsId };
+            ? { bsId: user?.bsId, isActive: true }
+            : { status: query?.status, bsId: user?.bsId, isActive: true };
         return await this.requestModel
           .find(findQuery)
           .populate('requestedUserId', '-hash')

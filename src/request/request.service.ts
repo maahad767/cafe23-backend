@@ -93,6 +93,24 @@ export class RequestService {
     }
   }
 
+  async disableRequest(id: string) {
+    try {
+      let newStatus = {
+        isActive: false,
+      };
+      await this.requestModel.findByIdAndUpdate(id, newStatus, {
+        new: true,
+      });
+
+      return {
+        status: 'Success',
+        message: 'Disable Request successfully',
+      };
+    } catch (error) {
+      throw new BadRequestException('Something Unexpected');
+    }
+  }
+
   async updateStatus(id: string, updateDto: UpdateDto, user): Promise<Status> {
     try {
       let newStatus = {

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RequestController } from './request.controller';
 import { RequestService } from './request.service';
 
-describe('AuthController', () => {
+describe('RequestController', () => {
   let controller: RequestController;
 
   beforeEach(async () => {

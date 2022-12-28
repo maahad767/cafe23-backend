@@ -9,7 +9,7 @@ import {
   IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UpdateLocationDto } from 'src/auth/dto';
+import { UpdateLocationDto } from '../../auth/dto';
 
 export class CreateRequestDto {
   @IsNotEmpty()

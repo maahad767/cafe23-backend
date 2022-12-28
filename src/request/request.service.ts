@@ -7,14 +7,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateRequestDto, RequestQueryDto, UpdateDto } from './dto';
 import { Request, RequestDocument } from './schemas';
-import { User, UserDocument } from '../auth/schemas/user.schema';
 import { CreateResponse, Status } from './types';
 
 @Injectable()
 export class RequestService {
   constructor(
     @InjectModel(Request.name) private requestModel: Model<RequestDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async createRequestItem(

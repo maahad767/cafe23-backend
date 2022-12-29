@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RequestService } from './request.service';
 
-describe('AuthService', () => {
+describe('RequestService', () => {
   let service: RequestService;
 
   beforeEach(async () => {

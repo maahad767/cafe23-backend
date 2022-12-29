@@ -11,9 +11,9 @@ import {
 import { RequestService } from './request.service';
 import { CreateRequestDto, RequestQueryDto, UpdateDto } from './dto';
 import { CreateResponse, Status } from './types';
-import { GetUser, Roles } from 'src/auth/decorators';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { User } from 'src/auth/schemas';
+import { GetUser, Roles } from '../auth/decorators';
+import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { User } from '../auth/schemas';
 
 @Controller('request')
 export class RequestController {
@@ -39,6 +39,13 @@ export class RequestController {
   @Get('info/:id')
   async getRequestDetails(@Param('id') id: string) {
     return await this.requestService.findRequestDetails(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPPORT')
+  @Put('disable/:id')
+  async disableRequest(@Param('id') id: string) {
+    return await this.requestService.disableRequest(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

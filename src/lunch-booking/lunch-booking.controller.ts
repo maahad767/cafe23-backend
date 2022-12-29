@@ -1,7 +1,18 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  ParseArrayPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { GetUser, Roles } from 'src/auth/decorators';
 import { User } from 'src/auth/schemas';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { BookLunchDto } from './dto/book-lunch.dto';
 
 import { LunchBookingService } from './lunch-booking.service';
 
@@ -9,32 +20,32 @@ import { LunchBookingService } from './lunch-booking.service';
 export class LunchBookingController {
   constructor(private readonly lunchBookingService: LunchBookingService) {}
 
-  // book lunch next week
-
-  // update booking
-
-  // cancel booking
-
-  // get all bookings
-
+  @Get('summary')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('EMPLOYEE')
-  @Get()
-  async getAllBookings(@GetUser() user: User) {
-    console.log(user);
-
-    return { message: 'This action returns all bookings' };
+  @Roles('ADMIN')
+  async getLunchBookingSummary(@GetUser() user: User) {
+    return this.lunchBookingService.getLunchBookingSummary(user);
   }
 
-  // get all bookings for a user
+  @Get('/my')
+  @UseGuards(JwtAuthGuard)
+  async getMyLunchBookings(@GetUser() user: User) {
+    return this.lunchBookingService.getMyLunchBookings(user);
+  }
 
-  // get all bookings for a date
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async bookLunch(
+    @GetUser() user: User,
+    @Body(new ParseArrayPipe({ items: BookLunchDto })) dto: BookLunchDto[],
+  ) {
+    return this.lunchBookingService.bookLunch(user, dto);
+  }
 
-  // get all bookings for a user and date
-
-  // get all bookings for a user and date range
-
-  // get all bookings for a date range
-
-  // get all bookings for a user and date range
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  async deleteAllLunchBookings(@GetUser() user: User) {
+    return this.lunchBookingService.deleteAllLunchBookings(user);
+  }
 }

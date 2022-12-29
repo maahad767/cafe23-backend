@@ -31,8 +31,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getMe(@GetUser() user: UserDocument) {
-    return this.authService.getMe(user);
+  async getProfile(@GetUser() user: UserDocument) {
+    return this.authService.getProfile(user);
   }
 
   @HttpCode(HttpStatus.OK)

@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
 import { RequestModule } from './request/request.module';
 import { LunchBookingModule } from './lunch-booking/lunch-booking.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -17,9 +19,11 @@ import { LunchBookingModule } from './lunch-booking/lunch-booking.module';
         uri: config.get<string>('MONGODB_URI'), // Loaded from .ENV
       }),
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     RequestModule,
     LunchBookingModule,
+    TasksModule,
   ],
 })
 export class AppModule {}

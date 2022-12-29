@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Office } from '.';
+import { OfficeDocument } from '.';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -29,7 +29,7 @@ export class User {
     ref: 'Office',
     required: false,
   })
-  office: Office;
+  office: OfficeDocument;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

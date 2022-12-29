@@ -52,20 +52,11 @@ export class AuthService {
     return this.createToken(user);
   }
 
-  async getMe(user: UserDocument) {
-    const userData = {
-      id: user._id,
-      bsid: user.bsid,
-      name: user.name,
-      email: user.email,
-      office: await this.officeModel.findById(user.office),
-    };
-    return userData;
+  async getProfile(user: UserDocument) {
+    return user;
   }
 
   async updateLocation(user: UserDocument, dto: UpdateLocationDto) {
-    console.log(dto);
-
     let office = await this.officeModel.findOne({
       ...dto,
     });
@@ -75,12 +66,7 @@ export class AuthService {
     }
     user.office = office;
     await this.userModel.updateOne({ _id: user._id }, user);
-    return {
-      office: user.office,
-      bsid: user.bsid,
-      name: user.name,
-      email: user.email,
-    };
+    return user.populate('office');
   }
 
   async createUser(dto: CreateUserDto) {

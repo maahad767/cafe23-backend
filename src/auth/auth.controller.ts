@@ -8,9 +8,14 @@ import {
   Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { GetUser } from './decorators';
-import { LoginDto, RegisterDto, UpdateLocationDto } from './dto';
-import { JwtAuthGuard } from './guards';
+import { GetUser, Roles } from './decorators';
+import {
+  CreateOfficeDto,
+  LoginDto,
+  RegisterDto,
+  UpdateLocationDto,
+} from './dto';
+import { JwtAuthGuard, RolesGuard } from './guards';
 import { UserDocument } from './schemas';
 
 @Controller('auth')
@@ -43,6 +48,13 @@ export class AuthController {
     @GetUser() user: UserDocument,
   ) {
     return this.authService.updateLocation(user, dto);
+  }
+
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('create-offices')
+  async createOffices(@Body() dto: CreateOfficeDto[]) {
+    return this.authService.createOffices(dto);
   }
 
   @HttpCode(HttpStatus.OK)

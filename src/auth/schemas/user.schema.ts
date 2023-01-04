@@ -27,7 +27,7 @@ export class User {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Office',
-    required: false,
+    autopopulate: { maxDepth: 1 },
   })
   office: OfficeDocument;
 }

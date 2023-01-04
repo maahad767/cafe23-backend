@@ -1,12 +1,19 @@
 import {
   BadRequestException,
   Injectable,
+  RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as argon from 'argon2';
-import { CreateUserDto, LoginDto, RegisterDto, UpdateLocationDto } from './dto';
+import {
+  CreateOfficeDto,
+  CreateUserDto,
+  LoginDto,
+  RegisterDto,
+  UpdateLocationDto,
+} from './dto';
 import { Office, OfficeDocument, User, UserDocument } from './schemas';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -57,26 +64,39 @@ export class AuthService {
   }
 
   async updateLocation(user: UserDocument, dto: UpdateLocationDto) {
-    let office = await this.officeModel.findOne({
-      ...dto,
-    });
-    if (!office) {
-      office = new this.officeModel(dto);
-      await office.save();
-    }
+    const office = await this.officeModel.findOneAndUpdate(
+      {
+        ...dto,
+      },
+      dto,
+      { upsert: true, new: true, runValidators: true },
+      (err, doc) => {
+        if (err) {
+          throw new RequestTimeoutException(
+            'Something went wrong while saving the office',
+          );
+        }
+      },
+    );
     user.office = office;
     await this.userModel.updateOne({ _id: user._id }, user);
     return user.populate('office');
   }
 
+  createOffices(dto: CreateOfficeDto[]) {
+    const offices = dto.map((office) => new this.officeModel(office));
+    return this.officeModel.insertMany(offices);
+  }
+
   async createUser(dto: CreateUserDto) {
     dto.bsid = dto.bsid.toLowerCase();
-    const is_already_exists = await this.userModel.exists({
-      bsid: dto.bsid,
-    });
+    const is_already_exists =
+      (await this.userModel.exists({
+        bsid: dto.bsid,
+      })) || (await this.userModel.exists({ email: dto.email }));
 
     if (is_already_exists) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException('User with the bsid/email already exists');
     }
 
     const user = new this.userModel(dto);

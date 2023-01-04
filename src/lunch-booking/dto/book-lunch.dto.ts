@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
+  IsNotEmptyObject,
   IsNumber,
   IsOptional,
   ValidateNested,
@@ -14,15 +15,13 @@ export class BookLunchDto {
   @IsDateString()
   date: Date;
 
-  @IsOptional()
   @IsEnum(['DELICIOUS', 'DIET', 'OFF'])
   lunch_option: string;
 
-  @IsOptional()
   @IsNumber()
   guests: number;
 
-  @IsOptional()
+  @IsNotEmptyObject()
   @Type(() => OfficeDto)
   @ValidateNested()
   office: OfficeDto;

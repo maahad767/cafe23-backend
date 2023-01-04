@@ -26,3 +26,4 @@ export class LunchBooking {
 }
 
 export const LunchBookingSchema = SchemaFactory.createForClass(LunchBooking);
+LunchBookingSchema.index({ date: 1, user: 1 }, { unique: true });
